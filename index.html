@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Player</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            color: white;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-panel {
+            width: 320px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .album-art {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff7b72, #d2a8ff);
+            margin: 0 auto 25px auto;
+            box-shadow: 0 0 30px rgba(210, 168, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .spin {
+            animation: spinRecord 4s linear infinite;
+        }
+
+        @keyframes spinRecord {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .track-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .artist-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 25px;
+        }
+
+        /* File Upload Button Styling */
+        .upload-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.2s;
+        }
+        .upload-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        #audioUpload { display: none; /* Hide the ugly default file input */ }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover { background: rgba(255, 255, 255, 0.2); }
+        button:active { transform: scale(0.9); }
+
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-panel">
+        <div class="album-art" id="record"></div>
+        <div class="track-title" id="titleDisplay">No Track Selected</div>
+        <div class="artist-name">Local Device Storage</div>
+        
+        <!-- Custom File Upload Button -->
+        <label class="upload-btn">
+            Load Local Song
+            <input type="file" id="audioUpload" accept="audio/*">
+        </label>
+
+        <!-- The Engine (Starts Empty) -->
+        <audio id="audioPlayer"></audio>
+
+        <div class="controls">
+            <button>&#9664;&#9664;</button> 
+            <button class="play-btn" id="playBtn" onclick="togglePlay()">&#9658;</button> 
+            <button>&#9654;&#9654;</button> 
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        const audio = document.getElementById('audioPlayer');
+        const uploadInput = document.getElementById('audioUpload');
+        const titleDisplay = document.getElementById('titleDisplay');
+        const record = document.getElementById('record');
+        const playBtn = document.getElementById('playBtn');
+
+        // Listen for when a file is selected
+        uploadInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Create a temporary internal URL for the selected file
+                const objectURL = URL.createObjectURL(file);
+                audio.src = objectURL;
+                
+                // Update track name on screen (removes the .mp3 extension)
+                titleDisplay.innerText = file.name.replace(/\.[^/.]+$/, "");
+                
+                // Reset play state if they load a new song while one is playing
+                if (isPlaying) {
+                    togglePlay(); 
+                }
+            }
+        });
+
+        function togglePlay() {
+            // Prevent playing if no source is loaded
+            if (!audio.src || audio.src === window.location.href) {
+                alert("Please load a song first!");
+                return;
+            }
+
+            isPlaying = !isPlaying;
+
+            if (isPlaying) {
+                record.classList.add('spin');
+                playBtn.innerHTML = '&#10074;&#10074;'; 
+                audio.play();  
+            } else {
+                record.classList.remove('spin');
+                playBtn.innerHTML = '&#9658;'; 
+                audio.pause(); 
+            }
+        }
+    </script>
+</body>
+</html>
