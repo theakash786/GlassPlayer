@@ -137,52 +137,6 @@
             <button>&#9654;&#9654;</button> 
         </div>
     </div>
-
-    <script>
-        let isPlaying = false;
-        const audio = document.getElementById('audioPlayer');
-        const uploadInput = document.getElementById('audioUpload');
-        const titleDisplay = document.getElementById('titleDisplay');
-        const record = document.getElementById('record');
-        const playBtn = document.getElementById('playBtn');
-
-        // Listen for when a file is selected
-        uploadInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                // Create a temporary internal URL for the selected file
-                const objectURL = URL.createObjectURL(file);
-                audio.src = objectURL;
-                
-                // Update track name on screen (removes the .mp3 extension)
-                titleDisplay.innerText = file.name.replace(/\.[^/.]+$/, "");
-                
-                // Reset play state if they load a new song while one is playing
-                if (isPlaying) {
-                    togglePlay(); 
-                }
-            }
-        });
-
-        function togglePlay() {
-            // Prevent playing if no source is loaded
-            if (!audio.src || audio.src === window.location.href) {
-                alert("Please load a song first!");
-                return;
-            }
-
-            isPlaying = !isPlaying;
-
-            if (isPlaying) {
-                record.classList.add('spin');
-                playBtn.innerHTML = '&#10074;&#10074;'; 
-                audio.play();  
-            } else {
-                record.classList.remove('spin');
-                playBtn.innerHTML = '&#9658;'; 
-                audio.pause(); 
-            }
-        }
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>
